@@ -244,7 +244,35 @@ export default function RunsPage() {
             {/* Final Output */}
             {selectedRun.finalOutput && (
               <div className="mb-8">
-                <h2 className="text-xl font-semibold mb-4">Final Output</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold">Final Output</h2>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const dataStr = JSON.stringify(selectedRun.trace, null, 2);
+                        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+                        const exportFileDefaultName = `trace-${selectedRun.id.split('-')[0]}.json`;
+                        const linkElement = document.createElement('a');
+                        linkElement.setAttribute('href', dataUri);
+                        linkElement.setAttribute('download', exportFileDefaultName);
+                        linkElement.click();
+                      }}
+                    >
+                      Export Trace as JSON
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      disabled
+                      className="opacity-50"
+                      title="Coming in v2"
+                    >
+                      Compare Runs (v2)
+                    </Button>
+                  </div>
+                </div>
                 <div className="p-4 rounded-lg border bg-card">
                   <pre className="text-sm whitespace-pre-wrap overflow-x-auto">
                     {typeof selectedRun.finalOutput === 'string'

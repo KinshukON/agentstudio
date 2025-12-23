@@ -50,6 +50,11 @@ export default function TemplatesPage() {
                   </div>
                   <CardTitle>{template.name}</CardTitle>
                   <CardDescription>{template.description}</CardDescription>
+                  <div className="mt-2 text-xs text-primary/70 font-medium">
+                    Pattern: {template.category === 'support' ? 'Data Aggregation + Synthesis' : 
+                             template.category === 'research' ? 'Sequential Research + Analysis' : 
+                             'Governed Multi-Step Workflow'}
+                  </div>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col justify-between">
                   <div className="mb-4">

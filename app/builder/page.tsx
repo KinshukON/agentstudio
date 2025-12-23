@@ -255,7 +255,15 @@ function BuilderContent() {
         </div>
 
         {/* Canvas */}
-        <div ref={reactFlowWrapper} className="flex-1 bg-muted/20">
+        <div ref={reactFlowWrapper} className="flex-1 bg-muted/20 relative">
+          {nodes.length === 0 && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+              <div className="text-center text-muted-foreground/40 max-w-md">
+                <p className="text-sm mb-2">✨ Start building your agent</p>
+                <p className="text-xs">Most agents start with a <strong>Goal</strong> and a <strong>Policy</strong> node</p>
+              </div>
+            </div>
+          )}
           <ReactFlow
             nodes={nodes}
             edges={edges}
