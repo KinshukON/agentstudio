@@ -140,13 +140,13 @@ function BuilderContent() {
       setNodes((nds) =>
         nds.map((node) =>
           node.id === selectedNode.id
-            ? { ...node, data: { ...node.data, ...updates } }
+            ? { ...node, data: { ...node.data, ...updates } as AgentNodeData }
             : node
         )
       );
 
       setSelectedNode((prev) =>
-        prev ? { ...prev, data: { ...prev.data, ...updates } } : null
+        prev ? { ...prev, data: { ...prev.data, ...updates } as AgentNodeData } : null
       );
     },
     [selectedNode, setNodes]

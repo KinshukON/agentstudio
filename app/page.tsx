@@ -25,11 +25,11 @@ export default function HomePage() {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <a href={bookUrl} target="_blank" rel="noopener noreferrer">
+            <Link href="/book">
               <Button size="lg" variant="outline" className="w-full sm:w-auto">
                 Get the Book
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -247,11 +247,11 @@ export default function HomePage() {
                 <span className="text-muted-foreground text-sm">Production operating models and team structures</span>
               </li>
             </ul>
-            <a href={bookUrl} target="_blank" rel="noopener noreferrer">
+            <Link href="/book">
               <Button size="lg" variant="outline">
                 Learn More About the Book
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
