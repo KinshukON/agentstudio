@@ -1,0 +1,48 @@
+# Agent Studio - Cursor Rules
+
+## Project Context
+This is a production-quality MVP for teaching agentic AI through visual building.
+Built for Vercel Free Tier deployment with no external dependencies.
+
+## Code Style
+- Use TypeScript strict mode
+- Prefer functional components with hooks
+- Use Tailwind CSS for styling
+- Keep components focused and composable
+- Add JSDoc comments for complex logic
+
+## Architecture Principles
+- No database (localStorage only)
+- No API keys stored server-side
+- Rate limiting in-memory
+- All guardrails enforced
+- Execution must complete in <10s
+
+## File Organization
+- Pages in /app with App Router
+- Reusable components in /components
+- Business logic in /lib
+- Types in /types
+- Static data in /data
+
+## When Adding Features
+1. Check Vercel Free Tier compatibility
+2. Ensure no long-running processes
+3. Add appropriate guardrails
+4. Update types if needed
+5. Test both sandbox and BYOK modes
+
+## Security Checklist
+- Never log API keys
+- Validate all user inputs
+- Enforce rate limits
+- Check execution bounds
+- Sanitize outputs
+
+## Testing Priorities
+- Agent execution completes
+- Traces are accurate
+- Export/import works
+- localStorage persists correctly
+- Rate limiter functions
+
