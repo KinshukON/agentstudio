@@ -101,7 +101,7 @@ export default function PDFCarousel({ pdfUrl }: PDFCarouselProps) {
             onClick={goToPrevPage}
             disabled={currentPage <= 1}
             className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full h-12 w-12 p-0 shadow-lg disabled:opacity-50"
-            variant="default"
+            variant="primary"
           >
             <ChevronLeft className="h-6 w-6" />
           </Button>
@@ -110,7 +110,7 @@ export default function PDFCarousel({ pdfUrl }: PDFCarouselProps) {
             onClick={goToNextPage}
             disabled={currentPage >= numPages}
             className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full h-12 w-12 p-0 shadow-lg disabled:opacity-50"
-            variant="default"
+            variant="primary"
           >
             <ChevronRight className="h-6 w-6" />
           </Button>
