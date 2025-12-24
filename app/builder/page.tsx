@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+
+export const dynamic = 'force-dynamic';
 import ReactFlow, {
   Node,
   Edge,

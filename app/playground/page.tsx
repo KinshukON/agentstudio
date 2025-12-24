@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AgentGraph, AgentRun } from '@/types';
+
+export const dynamic = 'force-dynamic';
 import { storage } from '@/lib/storage';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
