@@ -3,14 +3,14 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AgentGraph, AgentRun } from '@/types';
-
-export const dynamic = 'force-dynamic';
 import { storage } from '@/lib/storage';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from '@/components/ui/Label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Play, Lock, Unlock, AlertCircle, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
+
+export const dynamic = 'force-dynamic';
 
 export default function PlaygroundPage() {
   const searchParams = useSearchParams();

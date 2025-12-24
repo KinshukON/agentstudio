@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AgentRun, TraceEntry } from '@/types';
-
-export const dynamic = 'force-dynamic';
 import { storage } from '@/lib/storage';
 import { formatTimestamp } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
@@ -77,6 +75,8 @@ function TraceViewer({ trace }: { trace: TraceEntry[] }) {
     </div>
   );
 }
+
+export const dynamic = 'force-dynamic';
 
 export default function RunsPage() {
   const searchParams = useSearchParams();

@@ -2,8 +2,6 @@
 
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-
-export const dynamic = 'force-dynamic';
 import ReactFlow, {
   Node,
   Edge,
@@ -50,6 +48,8 @@ const defaultNodeData: Record<NodeType, Partial<AgentNodeData>> = {
   humanApproval: { prompt: 'Approve?', requireApproval: true },
   output: { format: 'text' },
 };
+
+export const dynamic = 'force-dynamic';
 
 function BuilderContent() {
   const searchParams = useSearchParams();
