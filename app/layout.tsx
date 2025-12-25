@@ -21,12 +21,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TutorialProvider>
-          <Header />
-          <div className="flex pt-16">
-            <TutorialPanel />
-            <TutorialLayout>
-              {children}
-            </TutorialLayout>
+          <div className="flex flex-col h-screen">
+            <Header />
+            <div className="flex flex-1 overflow-hidden">
+              <TutorialPanel />
+              <TutorialLayout>
+                {children}
+              </TutorialLayout>
+            </div>
           </div>
         </TutorialProvider>
       </body>

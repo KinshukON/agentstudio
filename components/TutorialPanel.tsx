@@ -205,7 +205,7 @@ export function TutorialPanel() {
   }
 
   return (
-    <aside className="hidden md:flex w-96 bg-background border-r shadow-xl flex-col shrink-0">
+    <aside className="hidden md:flex w-96 bg-background border-r shadow-xl flex-col shrink-0 overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b bg-primary/5">
         <div className="flex items-center justify-between mb-3">
