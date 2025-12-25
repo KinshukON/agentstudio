@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
-import { TutorialPanel } from "@/components/TutorialPanel";
+import { TutorialPanel, TutorialProvider } from "@/components/TutorialPanel";
+import { TutorialLayout } from "@/components/TutorialLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,11 +20,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Header />
-        <TutorialPanel />
-        <main className="min-h-screen">
-          {children}
-        </main>
+        <TutorialProvider>
+          <Header />
+          <div className="flex pt-16">
+            <TutorialPanel />
+            <TutorialLayout>
+              {children}
+            </TutorialLayout>
+          </div>
+        </TutorialProvider>
       </body>
     </html>
   );

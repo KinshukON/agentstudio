@@ -1,10 +1,31 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, createContext, useContext } from 'react';
 import { usePathname } from 'next/navigation';
 import { Button } from './ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { X, ChevronRight, CheckCircle2, Play, RotateCcw } from 'lucide-react';
+
+// Context to manage tutorial state across components
+const TutorialContext = createContext<{
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}>({
+  isOpen: false,
+  setIsOpen: () => {},
+});
+
+export const useTutorial = () => useContext(TutorialContext);
+
+export function TutorialProvider({ children }: { children: React.ReactNode }) {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <TutorialContext.Provider value={{ isOpen, setIsOpen }}>
+      {children}
+    </TutorialContext.Provider>
+  );
+}
 
 interface TutorialStep {
   id: string;
@@ -109,7 +130,7 @@ const tutorialSteps: TutorialStep[] = [
 ];
 
 export function TutorialPanel() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen } = useTutorial();
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
   const pathname = usePathname();
@@ -174,7 +195,7 @@ export function TutorialPanel() {
     return (
       <Button
         onClick={startTutorial}
-        className="fixed bottom-6 right-6 shadow-lg z-50 rounded-full h-14 px-6"
+        className="fixed bottom-6 right-6 shadow-lg z-50 rounded-full h-14 px-6 hidden md:flex"
         size="lg"
       >
         <Play className="mr-2 h-5 w-5" />
@@ -184,7 +205,7 @@ export function TutorialPanel() {
   }
 
   return (
-    <div className="fixed left-0 top-16 bottom-0 w-96 bg-background border-r shadow-xl z-40 flex flex-col">
+    <aside className="hidden md:flex w-96 bg-background border-r shadow-xl flex-col shrink-0">
       {/* Header */}
       <div className="p-4 border-b bg-primary/5">
         <div className="flex items-center justify-between mb-3">
@@ -300,7 +321,7 @@ export function TutorialPanel() {
           </Button>
         )}
       </div>
-    </div>
+    </aside>
   );
 }
 
