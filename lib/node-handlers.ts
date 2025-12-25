@@ -104,23 +104,80 @@ function executePlannerNode(
   const goal = context.variables['goal'] || 'No goal set';
   const maxSteps = nodeData.maxSteps || 5;
   
-  // Heuristic planning - generate a simple plan
-  const plan = {
-    goal,
-    steps: [
+  // Context-aware planning: analyze available data to create specific plans
+  const crmResults = context.variables['crmResults'] || [];
+  const ticketResults = context.variables['ticketResults'] || [];
+  const searchResults = context.variables['searchResults'] || [];
+  
+  let steps: any[] = [];
+  
+  // Generate context-aware steps based on available data
+  if (crmResults.length > 0 && ticketResults.length > 0) {
+    // Support agent scenario
+    const atRiskCount = crmResults.filter((c: any) => c.status === 'at-risk').length;
+    const highPriorityTickets = ticketResults.filter((t: any) => t.priority === 'high').length;
+    
+    steps = [
+      { 
+        step: 1, 
+        action: `Identify at-risk customers (${atRiskCount} found)`,
+        details: crmResults.slice(0, 2).map((c: any) => `${c.name}: Health ${c.healthScore}`)
+      },
+      { 
+        step: 2, 
+        action: `Review critical tickets (${highPriorityTickets} high priority)`,
+        details: ticketResults.slice(0, 2).map((t: any) => `${t.id}: ${t.subject}`)
+      },
+      { 
+        step: 3, 
+        action: 'Correlate customer health with ticket patterns',
+        details: ['Cross-reference ticket volume with health scores']
+      },
+      { 
+        step: 4, 
+        action: 'Generate personalized outreach plan',
+        details: ['Prioritize customers with multiple high-priority tickets']
+      },
+      { 
+        step: 5, 
+        action: 'Deliver actionable recommendations',
+        details: ['Include specific actions and timelines']
+      },
+    ];
+  } else if (searchResults.length > 0) {
+    // Research agent scenario
+    steps = [
+      { step: 1, action: 'Gather research data', details: [`Found ${searchResults.length} sources`] },
+      { step: 2, action: 'Analyze key findings', details: ['Extract main insights'] },
+      { step: 3, action: 'Synthesize information', details: ['Combine multiple perspectives'] },
+      { step: 4, action: 'Generate summary', details: ['Create actionable report'] },
+    ];
+  } else {
+    // Generic fallback
+    steps = [
       { step: 1, action: 'Gather context and requirements' },
       { step: 2, action: 'Analyze available data' },
       { step: 3, action: 'Generate solution approach' },
       { step: 4, action: 'Execute and validate' },
       { step: 5, action: 'Deliver results' },
-    ].slice(0, maxSteps),
+    ];
+  }
+  
+  const plan = {
+    goal,
+    steps: steps.slice(0, maxSteps),
     strategy: nodeData.strategy || 'sequential',
+    dataContext: {
+      crmRecords: crmResults.length,
+      tickets: ticketResults.length,
+      searchResults: searchResults.length,
+    }
   };
   
   context.variables['plan'] = plan;
   return {
     output: plan,
-    summary: `Plan created: ${maxSteps} steps (${nodeData.strategy})`,
+    summary: `Context-aware plan: ${plan.steps.length} steps with ${Object.values(plan.dataContext).reduce((a: number, b: number) => a + b, 0)} data points`,
   };
 }
 
@@ -269,18 +326,83 @@ function executeOutputNode(
   context: ExecutionContext
 ): NodeExecutionResult {
   const format = nodeData.format || 'text';
-  const data = context.variables['lastOutput'] || context.variables['lastPromptResponse'] || context.memory;
+  const plan = context.variables['plan'];
+  const crmResults = context.variables['crmResults'] || [];
+  const ticketResults = context.variables['ticketResults'] || [];
+  const goal = context.variables['goal'];
   
   let formattedOutput: any;
   
   switch (format) {
     case 'json':
-      formattedOutput = JSON.stringify(data, null, 2);
+      formattedOutput = JSON.stringify({
+        goal,
+        plan,
+        data: { crmResults, ticketResults },
+        summary: 'Complete execution data'
+      }, null, 2);
       break;
+      
     case 'markdown':
-      formattedOutput = `# Output\n\n${typeof data === 'string' ? data : JSON.stringify(data, null, 2)}`;
+      // Intelligent markdown generation based on context
+      if (plan && crmResults.length > 0 && ticketResults.length > 0) {
+        // Support Agent Summary
+        const atRiskCustomers = crmResults.filter((c: any) => c.status === 'at-risk');
+        const highPriorityTickets = ticketResults.filter((t: any) => t.priority === 'high');
+        
+        formattedOutput = `# Support Agent Analysis\n\n`;
+        formattedOutput += `**Goal:** ${goal}\n\n`;
+        formattedOutput += `## Executive Summary\n\n`;
+        formattedOutput += `- 🔴 **${atRiskCustomers.length}** at-risk customers identified\n`;
+        formattedOutput += `- 📋 **${ticketResults.length}** open/in-progress tickets\n`;
+        formattedOutput += `- ⚠️ **${highPriorityTickets.length}** high-priority issues\n\n`;
+        
+        formattedOutput += `## Critical Customers\n\n`;
+        atRiskCustomers.forEach((customer: any) => {
+          const customerTickets = ticketResults.filter((t: any) => t.customerId === customer.id);
+          formattedOutput += `### ${customer.name} (${customer.tier})\n`;
+          formattedOutput += `- Health Score: **${customer.healthScore}/100** ${customer.healthScore < 50 ? '🔴' : '🟡'}\n`;
+          formattedOutput += `- MRR: $${customer.mrr}\n`;
+          formattedOutput += `- Renewal: ${customer.renewalDate}\n`;
+          formattedOutput += `- Active Tickets: ${customerTickets.length}\n\n`;
+          
+          if (customerTickets.length > 0) {
+            formattedOutput += `**Recent Issues:**\n`;
+            customerTickets.forEach((ticket: any) => {
+              const priorityEmoji = ticket.priority === 'high' ? '🔥' : ticket.priority === 'medium' ? '⚠️' : 'ℹ️';
+              formattedOutput += `- ${priorityEmoji} [${ticket.id}] ${ticket.subject} (${ticket.status})\n`;
+            });
+            formattedOutput += `\n`;
+          }
+        });
+        
+        formattedOutput += `## Recommended Actions\n\n`;
+        if (plan && plan.steps) {
+          plan.steps.forEach((step: any, index: number) => {
+            formattedOutput += `${index + 1}. **${step.action}**\n`;
+            if (step.details) {
+              step.details.forEach((detail: string) => {
+                formattedOutput += `   - ${detail}\n`;
+              });
+            }
+            formattedOutput += `\n`;
+          });
+        }
+        
+        formattedOutput += `## Next Steps\n\n`;
+        formattedOutput += `1. Reach out to ${atRiskCustomers[0]?.name || 'at-risk customers'} within 24 hours\n`;
+        formattedOutput += `2. Prioritize high-priority tickets for immediate resolution\n`;
+        formattedOutput += `3. Schedule health check calls with customers below 50 health score\n`;
+        formattedOutput += `4. Monitor ticket resolution progress daily\n`;
+      } else {
+        // Generic output
+        const data = context.variables['lastOutput'] || context.variables['lastPromptResponse'] || context.memory;
+        formattedOutput = `# Output\n\n${typeof data === 'string' ? data : JSON.stringify(data, null, 2)}`;
+      }
       break;
+      
     default:
+      const data = context.variables['lastOutput'] || context.variables['lastPromptResponse'] || context.memory;
       formattedOutput = typeof data === 'string' ? data : JSON.stringify(data);
   }
   
@@ -288,7 +410,7 @@ function executeOutputNode(
   
   return {
     output: formattedOutput,
-    summary: `Output generated (${format})`,
+    summary: `Intelligent output generated (${format})`,
   };
 }
 
