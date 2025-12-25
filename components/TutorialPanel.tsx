@@ -133,32 +133,43 @@ export function TutorialPanel() {
   const { isOpen, setIsOpen } = useTutorial();
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<string>>(new Set());
+  const [lastPathname, setLastPathname] = useState<string>('');
   const pathname = usePathname();
 
-  // Auto-advance based on page navigation
+  // Auto-advance based on page navigation ONLY when page actually changes
   useEffect(() => {
     if (!isOpen) return;
 
     const step = tutorialSteps[currentStep];
     if (!step) return;
 
-    // Check if we're on the expected page for the next step
-    if (step.checkmark && pathname === step.page) {
-      // Mark current step as completed
-      setCompletedSteps(prev => new Set([...prev, step.id]));
-    }
+    // Only auto-advance if the pathname actually changed (user navigated)
+    if (pathname !== lastPathname) {
+      setLastPathname(pathname);
+      
+      // Check if we're on the expected page for the next step
+      if (step.checkmark && pathname === step.page) {
+        // Mark current step as completed
+        setCompletedSteps(prev => new Set([...prev, step.id]));
+      }
 
-    // Auto-advance to next step when on the right page
-    if (currentStep < tutorialSteps.length - 1) {
-      const nextStep = tutorialSteps[currentStep + 1];
-      if (nextStep && pathname === nextStep.page && !completedSteps.has(nextStep.id)) {
-        setTimeout(() => {
-          setCurrentStep(currentStep + 1);
-          setCompletedSteps(prev => new Set([...prev, step.id]));
-        }, 500);
+      // Auto-advance to next step ONLY if:
+      // 1. The page changed to match the next step's page
+      // 2. The previous step was on a different page
+      if (currentStep < tutorialSteps.length - 1) {
+        const nextStep = tutorialSteps[currentStep + 1];
+        const currentStepPage = step.page;
+        
+        // Only auto-advance if we moved to a NEW page that matches the next step
+        if (nextStep && pathname === nextStep.page && pathname !== currentStepPage) {
+          setTimeout(() => {
+            setCurrentStep(currentStep + 1);
+            setCompletedSteps(prev => new Set([...prev, step.id]));
+          }, 500);
+        }
       }
     }
-  }, [pathname, isOpen, currentStep, completedSteps]);
+  }, [pathname, isOpen, currentStep, completedSteps, lastPathname]);
 
   const startTutorial = () => {
     setIsOpen(true);
